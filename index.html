@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Onboarding Tracker · GoodDay Merchant Success</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --grass:#0C3A2C; --green:#33CC99; --cloud:#F7F5F2; --sage:#D0EDE0;
+  --night:#2B2929; --moss:#54514F; --earth:#8E8B87; --fog:#C2BDB6;
+  --mist:#FFFDFA; --forest:#002020; --white:#fff;
+  --amber:#FF8C19; --amber-soft:#FFDFA8; --red:#C4342A; --red-soft:#FFD9D5;
+  --line:#E7E3DD;
+  --r:9px;
+  --shadow:0 1px 2px rgba(12,58,44,.06), 0 8px 24px -12px rgba(12,58,44,.18);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--cloud); color:var(--night);
+  font-family:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+  font-size:14px; line-height:1.45; -webkit-font-smoothing:antialiased;
+}
+button{font-family:inherit;font-size:inherit;color:inherit;cursor:pointer}
+.mono{font-family:'IBM Plex Mono',ui-monospace,monospace}
+
+/* ---------- header ---------- */
+header{
+  background:var(--white); border-bottom:1px solid var(--line);
+  padding:18px 24px 0; position:sticky; top:0; z-index:60;
+}
+.hrow{display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap}
+.mark{width:38px;height:38px;border-radius:10px;background:var(--green);
+  display:grid;place-items:center;flex:none}
+.mark svg{width:24px;height:24px}
+h1{font-family:'Instrument Serif',Georgia,serif;font-weight:400;
+  font-size:29px;line-height:1.05;margin:0;color:var(--grass);letter-spacing:-.01em}
+.sub{font-size:12px;color:var(--earth);margin-top:2px;letter-spacing:.01em}
+.hspace{flex:1}
+.hactions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+.btn{background:var(--white);border:1px solid var(--line);border-radius:var(--r);
+  padding:7px 13px;font-size:12.5px;font-weight:500;color:var(--grass);
+  transition:.14s;white-space:nowrap}
+.btn:hover{border-color:var(--grass);background:var(--cloud)}
+.btn.solid{background:var(--grass);color:#fff;border-color:var(--grass)}
+.btn.solid:hover{background:#0a2e23}
+
+/* ---------- controls ---------- */
+.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+  padding:14px 0 13px}
+.eyebrow{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--earth)}
+.seg{display:flex;background:var(--cloud);border:1px solid var(--line);
+  border-radius:var(--r);padding:2px;gap:2px}
+.seg button{border:0;background:transparent;padding:5px 11px;border-radius:7px;
+  font-size:12px;font-weight:500;color:var(--moss);transition:.12s}
+.seg button[aria-pressed="true"]{background:var(--white);color:var(--grass);
+  box-shadow:0 1px 2px rgba(0,0,0,.07);font-weight:600}
+input[type="search"],select{
+  font-family:inherit;font-size:12.5px;padding:7px 11px;border:1px solid var(--line);
+  border-radius:var(--r);background:var(--white);color:var(--night);outline:none}
+input[type="search"]{min-width:190px}
+input[type="search"]:focus,select:focus{border-color:var(--green);
+  box-shadow:0 0 0 3px rgba(51,204,153,.2)}
+
+.legend{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.lg{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);
+  background:var(--white);border-radius:99px;padding:4px 10px 4px 8px;
+  font-size:11.5px;font-weight:500;color:var(--moss);transition:.12s}
+.lg:hover{border-color:var(--fog)}
+.lg[aria-pressed="false"]{opacity:.4}
+.lg i{width:9px;height:9px;border-radius:3px;display:block;flex:none}
+.lg b{font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--grass)}
+
+/* ---------- table shell ---------- */
+main{padding:20px 24px 90px}
+.scroller{overflow-x:auto;border:1px solid var(--line);border-radius:14px;
+  background:var(--white);box-shadow:var(--shadow)}
+table{border-collapse:separate;border-spacing:0;width:100%;min-width:100%}
+thead th{
+  position:sticky;top:0;z-index:20;background:var(--white);
+  font-family:'IBM Plex Mono',monospace;font-size:9.5px;font-weight:600;
+  letter-spacing:.11em;text-transform:uppercase;color:var(--earth);
+  text-align:left;padding:13px 12px 11px;border-bottom:1px solid var(--line);
+  white-space:nowrap}
+thead th.tech{color:var(--grass)}
+th.sticky-l,td.sticky-l{position:sticky;left:0;z-index:22;background:var(--white)}
+thead th.sticky-l{z-index:30}
+tbody td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+tbody tr:hover td{background:#FCFBF9}
+tbody tr:hover td.sticky-l{background:#FCFBF9}
+.divider{border-left:1px solid var(--line)}
+
+/* group header row */
+tr.grp td{background:var(--cloud);border-bottom:1px solid var(--line);
+  border-top:1px solid var(--line);padding:0}
+tr.grp:hover td{background:var(--cloud)}
+.grpbar{display:flex;align-items:center;gap:12px;padding:9px 12px;width:100%;
+  border:0;background:transparent;text-align:left}
+.grpname{font-family:'Instrument Serif',Georgia,serif;font-size:19px;
+  color:var(--grass);line-height:1}
+.chev{font-size:9px;color:var(--earth);width:9px;transition:transform .15s}
+.grp.closed .chev{transform:rotate(-90deg)}
+.grpmeta{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--earth);
+  letter-spacing:.04em}
+.pbar{width:110px;height:5px;border-radius:99px;background:var(--line);overflow:hidden;flex:none}
+.pbar span{display:block;height:100%;background:var(--green);border-radius:99px;transition:width .3s}
+
+/* cells */
+.acct{display:flex;align-items:center;gap:8px;min-width:0}
+.acct a{color:var(--grass);font-weight:600;text-decoration:none;font-size:13.5px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:210px;display:block}
+.acct a:hover{text-decoration:underline;text-underline-offset:2px}
+.dot{width:6px;height:6px;border-radius:99px;flex:none}
+
+.phase{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;
+  font-weight:600;letter-spacing:.07em;text-transform:uppercase;
+  padding:3px 8px;border-radius:99px;white-space:nowrap}
+.phase.on{background:var(--sage);color:var(--grass)}
+.phase.gl{background:var(--grass);color:var(--green)}
+
+td.date{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--moss);
+  white-space:nowrap;letter-spacing:-.01em}
+.nodate{color:var(--fog)}
+
+.var{display:flex;align-items:center;gap:8px;min-width:104px}
+.varnum{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;
+  padding:2px 7px;border-radius:6px;white-space:nowrap;min-width:52px;text-align:right}
+.varbar{flex:1;height:4px;border-radius:99px;background:var(--line);overflow:hidden;min-width:26px}
+.varbar span{display:block;height:100%;border-radius:99px}
+
+.prio{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;
+  width:23px;height:23px;border-radius:7px;display:grid;place-items:center;
+  background:var(--cloud);color:var(--grass);border:1px solid var(--line)}
+.prio.p1{background:var(--grass);color:#fff;border-color:var(--grass)}
+.prio.none{color:var(--fog);background:transparent;border-color:transparent}
+
+/* tech chips */
+td.techcell{padding:6px 8px}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.chip{
+  border-radius:8px;border:1.5px solid var(--line);background:var(--white);
+  padding:6px 10px;font-size:12px;font-weight:600;color:var(--moss);
+  position:relative;transition:.13s;white-space:nowrap;line-height:1.2;
+  max-width:170px;overflow:hidden;text-overflow:ellipsis}
+.chip:hover{transform:translateY(-1px);box-shadow:0 3px 9px -3px rgba(12,58,44,.3)}
+.chip:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.chip .flag{position:absolute;top:-3px;right:-3px;width:7px;height:7px;
+  border-radius:99px;border:1.5px solid var(--white)}
+.chip.s-complete{background:var(--sage);border-color:var(--green);color:var(--grass)}
+.chip.s-progress{background:#FFF3E0;border-color:var(--amber);color:#8A4A00}
+.chip.s-critical{background:var(--red-soft);border-color:var(--red);color:#8E1F17}
+.chip.s-notneeded{background:var(--cloud);border-color:var(--line);color:var(--fog);
+  text-decoration:line-through;text-decoration-thickness:1px}
+.chip.s-notstarted{background:var(--white);border-color:var(--line);color:var(--moss)}
+.empty{color:var(--line);font-size:14px;padding-left:4px}
+
+/* popover */
+.pop{position:fixed;z-index:200;width:274px;background:var(--white);
+  border:1px solid var(--line);border-radius:13px;
+  box-shadow:0 14px 44px -10px rgba(12,58,44,.32);padding:9px;display:none}
+.pop.open{display:block}
+.pop h4{margin:2px 4px 8px;font-size:13.5px;color:var(--grass);font-weight:700}
+.pop .det{margin:0 4px 9px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;
+  color:var(--earth);line-height:1.55;word-break:break-word}
+.pop .det b{color:var(--moss);font-weight:600}
+.opt{display:flex;align-items:center;gap:9px;width:100%;border:0;background:transparent;
+  padding:7px 8px;border-radius:8px;font-size:13px;font-weight:500;text-align:left;
+  transition:.1s;color:var(--night)}
+.opt:hover{background:var(--cloud)}
+.opt i{width:15px;height:15px;border-radius:5px;border:1.5px solid var(--line);flex:none}
+.opt[aria-pressed="true"]{background:var(--cloud);font-weight:700;color:var(--grass)}
+.opt .tick{margin-left:auto;color:var(--green);font-weight:700;opacity:0}
+.opt[aria-pressed="true"] .tick{opacity:1}
+.pop hr{border:0;border-top:1px solid var(--line);margin:8px 4px}
+.pop label{display:block;margin:0 4px 5px;font-family:'IBM Plex Mono',monospace;
+  font-size:9.5px;font-weight:600;letter-spacing:.11em;text-transform:uppercase;color:var(--earth)}
+.pop textarea{width:calc(100% - 8px);margin:0 4px;min-height:56px;resize:vertical;
+  font-family:inherit;font-size:12.5px;padding:8px 9px;border:1px solid var(--line);
+  border-radius:8px;outline:none;color:var(--night);background:var(--mist)}
+.pop textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(51,204,153,.18)}
+
+/* standardized onboarding steps */
+thead th.std{color:var(--grass)}
+thead th.stdtoggle{cursor:pointer;user-select:none}
+thead th.stdtoggle:hover{color:var(--green)}
+td.stdcell{padding:7px 12px}
+.steps{display:flex;align-items:center;gap:8px}
+.dots{display:flex;gap:3px}
+.chip.sdot{width:15px;height:15px;padding:0;border-radius:5px;font-size:0;
+  overflow:hidden;max-width:none;flex:none}
+.chip.sdot:hover{transform:translateY(-1px) scale(1.14)}
+.chip.sdot .flag{top:-2px;right:-2px;width:6px;height:6px;border-width:1.5px}
+.chip.sdot.s-notstarted{border-color:var(--line);background:var(--white)}
+.frac{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;
+  color:var(--earth);white-space:nowrap;min-width:30px}
+.frac.all{color:var(--grass)}
+
+/* drag to reorder */
+.grip{cursor:grab;color:var(--fog);font-size:13px;line-height:1;padding:3px 2px;
+  flex:none;user-select:none;letter-spacing:-2px;transition:color .12s}
+.grip:hover{color:var(--grass)}
+.grip:active{cursor:grabbing}
+tr.dragging{opacity:.45}
+tr.dragging td{background:var(--sage)!important}
+tr.dropzone td{box-shadow:inset 0 2px 0 var(--green)}
+.minilink{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;
+  letter-spacing:.06em;text-transform:uppercase;text-decoration:none;flex:none;
+  padding:2px 5px;border-radius:5px;border:1px solid var(--line);
+  color:var(--earth);background:var(--white);transition:.12s;line-height:1.35}
+.minilink:hover{border-color:var(--grass);color:var(--grass);background:var(--cloud)}
+.minilink.doc{color:var(--grass);border-color:var(--sage);background:var(--sage)}
+.minilink.doc:hover{background:var(--green);color:#fff;border-color:var(--green)}
+.pop .golink{display:block;margin:0 4px 9px;padding:7px 9px;border-radius:8px;
+  background:var(--sage);color:var(--grass);text-decoration:none;font-size:12px;
+  font-weight:600;transition:.12s}
+.pop .golink:hover{background:var(--green);color:#fff}
+.pop .golink span{font-family:'IBM Plex Mono',monospace;font-size:9.5px;
+  display:block;font-weight:500;opacity:.75;margin-top:1px}
+.dupe{display:inline-grid;place-items:center;width:15px;height:15px;border-radius:5px;
+  background:var(--red-soft);color:#8E1F17;font-size:9.5px;font-weight:700;flex:none;
+  font-family:'IBM Plex Mono',monospace;cursor:help}
+
+/* inline editing */
+td.edit{cursor:text;border-radius:6px}
+td.edit:hover{box-shadow:inset 0 0 0 1.5px var(--sage)}
+td.edit.pend{background:#FFF8E8}
+tbody tr:hover td.edit.pend{background:#FFF3DC}
+.pendmark{color:var(--amber);font-weight:700;margin-left:5px}
+td.edit input[type="date"],td.edit select{
+  font-family:'IBM Plex Mono',monospace;font-size:11.5px;padding:4px 6px;
+  border:1.5px solid var(--green);border-radius:6px;background:var(--white);
+  color:var(--night);outline:none;width:100%;max-width:150px}
+td.edit select{font-size:12px}
+.btn.sync{border-color:var(--amber);background:#FFF3E0;color:#8A4A00;font-weight:600}
+.btn.sync:hover{background:#FFE8CC;border-color:var(--amber)}
+.btn.sync b{font-family:'IBM Plex Mono',monospace}
+.toast{position:fixed;left:50%;bottom:64px;transform:translateX(-50%);z-index:300;
+  background:var(--grass);color:#fff;padding:11px 18px;border-radius:10px;
+  font-size:13px;max-width:min(560px,92vw);box-shadow:0 12px 32px -8px rgba(12,58,44,.45);
+  display:none;line-height:1.5}
+.toast.show{display:block}
+.toast.bad{background:#8E1F17}
+.toast code{font-family:'IBM Plex Mono',monospace;font-size:11.5px;
+  background:rgba(255,255,255,.16);padding:1px 5px;border-radius:4px}
+
+/* footer */
+.foot{position:fixed;left:0;right:0;bottom:0;background:var(--white);
+  border-top:1px solid var(--line);padding:10px 24px;display:flex;gap:18px;
+  align-items:center;flex-wrap:wrap;z-index:50;font-size:12px}
+.foot .tot{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:11.5px;
+  color:var(--earth);letter-spacing:.03em}
+.foot .tot b{color:var(--grass);font-weight:600}
+.blank{padding:52px 24px;text-align:center;color:var(--earth);font-size:13px}
+.scale{display:flex;align-items:center;gap:7px;font-family:'IBM Plex Mono',monospace;
+  font-size:10px;color:var(--earth);letter-spacing:.06em}
+.scale .ramp{width:88px;height:6px;border-radius:99px;
+  background:linear-gradient(90deg,#0C3A2C,#33CC99,#F1D24B,#FF8C19,#8E1F17)}
+@media(max-width:640px){
+  header{padding:14px 14px 0} main{padding:14px 14px 90px} .foot{padding:9px 14px}
+  h1{font-size:23px} .acct a{max-width:150px}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hrow">
+    <div class="mark" aria-hidden="true">
+      <svg viewBox="0 0 32 32" fill="none"><circle cx="11" cy="12" r="3.4" fill="#fff"/><circle cx="21" cy="12" r="3.4" fill="#fff"/><path d="M8 19c1.9 3.4 5 5 8 5s6.1-1.6 8-5" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg>
+    </div>
+    <div>
+      <h1>Onboarding Tracker</h1>
+      <div class="sub">Merchant Success · every Customer in Onboarding or Go Live</div>
+    </div>
+    <div class="hspace"></div>
+    <div class="hactions">
+      <button class="btn sync" id="sync" hidden>Push <b id="pend">0</b> edits to HubSpot</button>
+      <button class="btn" id="expand">Expand all</button>
+      <button class="btn" id="export">Export JSON</button>
+      <button class="btn solid" id="reset">Reset statuses</button>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="seg" role="group" aria-label="Group by">
+      <button data-group="owner" aria-pressed="true">By MSM</button>
+      <button data-group="none" aria-pressed="false">Flat</button>
+    </div>
+    <div class="seg" role="group" aria-label="Tech layout">
+      <button data-layout="compact" aria-pressed="true">Compact</button>
+      <button data-layout="columns" aria-pressed="false">Columns</button>
+    </div>
+    <div class="seg" role="group" aria-label="Onboarding steps">
+      <button data-steps="summary" aria-pressed="true">Steps rolled up</button>
+      <button data-steps="full" aria-pressed="false">Expanded</button>
+    </div>
+    <select id="owner"><option value="">All MSMs</option></select>
+    <select id="phase">
+      <option value="">Both phases</option>
+      <option value="Onboarding">Onboarding</option>
+      <option value="Go Live">Go Live</option>
+    </select>
+    <input type="search" id="q" placeholder="Filter accounts…" aria-label="Filter accounts">
+    <div class="hspace"></div>
+    <div class="legend" id="legend"></div>
+  </div>
+</header>
+
+<main>
+  <div class="scroller"><table id="tbl"><thead><tr id="head"></tr></thead><tbody id="body"></tbody></table></div>
+  <div class="blank" id="blank" hidden>No accounts match these filters.</div>
+</main>
+
+<div class="foot">
+  <div class="scale"><span>FAST</span><span class="ramp"></span><span>SLOW</span><span style="color:var(--fog)">· kick-off → inventory go live</span></div>
+  <div class="tot" id="tot"></div>
+</div>
+
+<div class="pop" id="pop" role="dialog" aria-label="Set workstream status"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ============================ data ============================ */
+const OWNERS = {
+  "409269132":"Hunter Leeming","161684280":"James Hargett","160517400":"David Ortiz",
+  "87722392":"Seth Horton","164361709":"Matt Pham","165100714":"Tim Kauer",
+  "165027172":"Matt Wardell"
+};
+const PORTAL = "47062627";
+
+/* Tech workstreams, in the order requested. `pick` reads the HubSpot value;
+   `skip` values mean "not applicable" so the chip is never drawn.        */
+const TECH = [
+  {k:"wms",   col:"WMS",        prop:"wms_3pl",            skip:[]},
+  {k:"edi",   col:"EDI",        prop:"edi",                skip:["None"]},
+  {k:"amz",   col:"Amazon",     prop:"amazon",             skip:[]},
+  {k:"tik",   col:"TikTok",     prop:"tiktok",             skip:[]},
+  {k:"pre",   col:"Presales",   prop:"presales",           skip:["false"], map:{"true":"Presales","Will Need Presales":"Will Need Presales"}},
+  {k:"coman", col:"Co-Man",     prop:"comanufacturing",    skip:["false",""], map:{"true":"Co-Man"}},
+  {k:"bun",   col:"Bundles",    prop:"bundles",            skip:[]},
+  {k:"many",  col:"1:many",     prop:"n1many",             skip:["false",""], map:{"true":"1:many"}},
+  {k:"qb",    col:"Quickbooks", prop:"accounting_platform",skip:["None"], label:{"other":"Other"}},
+  {k:"b2b",   col:"B2B Selling",prop:"b2b_selling",        skip:["None"]},
+  {k:"loop",  col:"Loop",       prop:"returns_system",     skip:["None"]}
+];
+
+/* The 8 standardized onboarding workstreams every account runs, tracked
+   separately from the tech requirements. Keys are s_* so they can never
+   collide with a TECH key — note s_wms is the onboarding milestone, which
+   is a different thing from the WMS tech chip and its 3PL config.        */
+const STD = [
+  {k:"s_discovery", col:"Discovery"},
+  {k:"s_data",      col:"Data"},
+  {k:"s_training",  col:"Training"},
+  {k:"s_reporting", col:"Reporting"},
+  {k:"s_sclive",    col:"SC Live"},
+  {k:"s_wholesale", col:"Wholesale"},
+  {k:"s_golive",    col:"Go Live"},
+  {k:"s_wms",       col:"WMS"}
+];
+
+const STATUSES = [
+  {k:"complete",  label:"Complete",    c:"#33CC99"},
+  {k:"progress",  label:"In progress", c:"#FF8C19"},
+  {k:"critical",  label:"Critical",    c:"#C4342A"},
+  {k:"notneeded", label:"Not needed",  c:"#C2BDB6"},
+  {k:"notstarted",label:"Not started", c:"#E7E3DD"}
+];
+
+const ACCOUNTS = [
+/* ---- David Ortiz ---- */
+{id:"327608576712",name:"TENŌRE",owner:"160517400",phase:"Onboarding",ko:"2026-08-04",gl:"2026-10-14",prio:"1",wms_3pl:"Deposco",thirdpartylogistics:"Scale 3PL",n1many:"true",os:"https://goodday-os.vercel.app/m/ten-re",doc:"https://docs.google.com/document/d/1G-AAs1TIltDZyg33MV8uMs1sbDiUFw6b1Np7kNmVw4E/edit?tab=t.0",wmsUrl:"https://admin.shopify.com/store/pattenore/apps/goodday-app-prod/configurations/wms-onboarding"},
+{id:"22873124623",name:"Thousand",owner:"160517400",phase:"Onboarding",ko:"2026-08-26",gl:"2026-10-15",prio:"1",wms_3pl:"ShipStation;Portless",thirdpartylogistics:"Portless",edi:"SPS Commerce",amazon:"FBA;FBM",tiktok:"FBT",n1many:"true",accounting_platform:"QuickBooks",b2b_selling:"Other",returns_system:"Loop",os:"https://goodday-os.vercel.app/m/thousand",doc:"https://docs.google.com/document/d/1dA5jCiDnofxHV8Zu-57pxcxTwYjTa8H_Lid5Ow9anPE/edit?tab=t.0",wmsUrl:"https://admin.shopify.com/store/thousand-helmets/apps/goodday-app-prod/configurations/wms-onboarding"},
+{id:"25305090993",name:"ERIC JAVITS LLC",owner:"160517400",phase:"Onboarding",ko:"2026-06-02",gl:"2026-10-12",prio:"1",wms_3pl:"CloudX",thirdpartylogistics:"Bergen Logistics",edi:"Crstl",comanufacturing:"true",accounting_platform:"other",b2b_selling:"None",returns_system:"Loop",os:"https://goodday-os.vercel.app/m/eric-javits-llc",doc:"https://docs.google.com/document/d/1SAijAfz0ZrvutFsEgFS5ZlCALdBi3wn8UbuEZG6oZ3Y/edit?tab=t.0",wmsUrl:"https://admin.shopify.com/store/eric-javits/apps/goodday-app-prod/configurations/wms-onboarding"},
+{id:"341916838614",name:"Untamed Petals by Amanda Judge",owner:"160517400",phase:"Onboarding",ko:"2026-08-19",gl:"2026-10-05",prio:"1",wms_3pl:"ShipHero",thirdpartylogistics:"Boxfort",edi:"None",n1many:"true",accounting_platform:"QuickBooks",b2b_selling:"None",returns_system:"Other",os:"https://goodday-os.vercel.app/m/untamed-petals",wmsUrl:"https://admin.shopify.com/store/untamedpetals/apps/goodday-app-prod/configurations/wms-onboarding"},
+{id:"338907018944",name:"Parasol Co",owner:"160517400",phase:"Onboarding",ko:"",gl:"2026-11-12",prio:"2",wms_3pl:"Extensiv;ShipStation",edi:"Other EDI;LogicBroker",amazon:"FBA",accounting_platform:"QuickBooks",b2b_selling:"None",returns_system:"None",os:"https://goodday-os.vercel.app/m/parasol-co",wmsUrl:"https://admin.shopify.com/store/parasol-inc/apps/goodday-app-prod/configurations/wms-onboarding/137"},
+{id:"332935100113",name:"Nectar Hydration",owner:"160517400",phase:"Onboarding",ko:"2026-09-02",gl:"2026-11-01",prio:"2",wms_3pl:"Extensiv",thirdpartylogistics:"Pyvott",amazon:"FBA",tiktok:"FBT",comanufacturing:"true",accounting_platform:"QuickBooks",b2b_selling:"None",returns_system:"Other",os:"https://goodday-os.vercel.app/m/nectar-hydration",doc:"https://docs.google.com/document/d/1R8iXjcCOg7K22VsdUQ3zQQiuh_dNNznpD2kPWcMHNGg/edit?tab=t.0",wmsUrl:"https://admin.shopify.com/store/nectar-fullwell/apps/goodday-app-prod/configurations/wms-onboarding"},
+{id:"341101843147",name:"Three Nails",owner:"160517400",phase:"Onboarding",ko:"2026-08-19",gl:"2026-11-09",prio:"2",wms_3pl:"Geodis",thirdpartylogistics:"Geodis",edi:"SPS Commerce",amazon:"FBA",accounting_platform:"QuickBooks",b2b_selling:"None",returns_system:"ReDo",os:"https://goodday-os.vercel.app/m/three-nails",doc:"https://docs.google.com/document/d/1awYh9H4E3oD9e7Lx7nTseHDgVgZSUu1bQ-zcGvEKCSI/edit?tab=t.0",wmsUrl:"https://admin.shopify.com/store/three-nails-clothing-co/apps/goodday-app-prod/configurations/wms-onboarding"},
+{id:"326912630497",name:"Peabody Home and Living",owner:"160517400",phase:"Onboarding",ko:"2026-06-23",gl:"",prio:"3",wms_3pl:"Expeditors",thirdpartylogistics:"Expeditors",edi:"None",amazon:"FBM",accounting_platform:"QuickBooks",b2b_selling:"Other",returns_system:"Loop",os:"https://goodday-os.vercel.app/m/peabody-home-llc"},
+{id:"340288518873",name:"Kleen-Tex Industries, Inc.",owner:"160517400",phase:"Onboarding",ko:"2026-06-23",gl:"",prio:"3",wms_3pl:"Expeditors",thirdpartylogistics:"Expeditors",edi:"None",amazon:"FBM",accounting_platform:"QuickBooks",returns_system:"Loop",os:"https://goodday-os.vercel.app/m/peabody-home-llc"},
+{id:"314955387600",name:"Toccin",owner:"160517400",phase:"Onboarding",ko:"2026-08-18",gl:"2026-11-12",prio:"3",wms_3pl:"CloudX",thirdpartylogistics:"Bergen Logistics",accounting_platform:"QuickBooks",b2b_selling:"NuOrder",returns_system:"Loop",os:"https://goodday-os.vercel.app/m/toccin",doc:"https://docs.google.com/document/d/1G_EZAuWBtrUgvhvFvgPrcj28h3bjHlSg-WgJyWD9ch0/edit?tab=t.0",wmsUrl:"https://admin.shopify.com/store/toccin/apps/goodday-app-prod/configurations/wms-onboarding/138"},
+{id:"307640739529",name:"La Ligne",owner:"160517400",phase:"Onboarding",ko:"2026-09-01",gl:"2027-01-09",prio:"3",wms_3pl:"Boxzooka",edi:"Other EDI",comanufacturing:"true",accounting_platform:"QuickBooks",b2b_selling:"NuOrder",returns_system:"Frate",os:"https://goodday-os.vercel.app/m/la-ligne",doc:"https://docs.google.com/document/d/1huMxTZ-Mlk1e0vtz0iVmqCEzRLIKy5NdzV3851XB4Cg/edit?tab=t.0",wmsUrl:"https://admin.shopify.com/store/lalignenyc/apps/goodday-app-prod/configurations/wms-onboarding/136"},
+{id:"314952001243",name:"Chief Gear LLC",owner:"160517400",phase:"Onboarding",ko:"2026-06-26",gl:"2026-11-12",prio:"5",wms_3pl:"No WMS",thirdpartylogistics:"In-House",edi:"SPS Commerce",accounting_platform:"QuickBooks",b2b_selling:"None",returns_system:"Other"},
+{id:"333533319908",name:"Marlen Swim (Vigo Sales Group)",owner:"160517400",phase:"Onboarding",ko:"",gl:"2026-11-12",prio:"5",wms_3pl:"ShipStation",thirdpartylogistics:"In-House",b2b_selling:"NuOrder",os:"https://goodday-os.vercel.app/m/vigo-sales-group"},
+{id:"336930068171",name:"Canopy",owner:"160517400",phase:"Go Live",ko:"2026-05-22",gl:"2026-08-31",prio:"",wms_3pl:"DCL Fulfillment Services",thirdpartylogistics:"DCL Logistics",edi:"SPS Commerce",presales:"Will Need Presales",amazon:"FBA;AWD",comanufacturing:"true",bundles:"GD Virtual Kits",accounting_platform:"QuickBooks",b2b_selling:"None",returns_system:"Loop",os:"https://goodday-os.vercel.app/m/canopy"},
+{id:"336998487785",name:"Sarah Flint Inc.",owner:"160517400",phase:"Go Live",ko:"2026-04-02",gl:"2026-08-26",prio:"",wms_3pl:"Datex",thirdpartylogistics:"Moda Express",edi:"None",presales:"Will Need Presales",comanufacturing:"",accounting_platform:"QuickBooks",b2b_selling:"None",returns_system:"Loop",os:"https://goodday-os.vercel.app/m/sarah-flint-inc"},
+{id:"242871153356",name:"Saint Art New York",owner:"160517400",phase:"Go Live",ko:"2026-08-10",gl:"2026-09-28",prio:"",wms_3pl:"Extensiv",thirdpartylogistics:"Statco",edi:"None",accounting_platform:"QuickBooks",b2b_selling:"Joor",returns_system:"Other",os:"https://goodday-os.vercel.app/m/saint-art-new-york"},
+
+/* ---- Matt Pham ---- */
+{id:"31029146731",name:"Danielle Guizio NY",owner:"164361709",phase:"Onboarding",ko:"2026-06-17",gl:"2026-10-07",prio:"1",wms_3pl:"CloudX",thirdpartylogistics:"Bergen Logistics",edi:"SPS Commerce",presales:"Will Need Presales",comanufacturing:"true",accounting_platform:"QuickBooks",b2b_selling:"Joor",returns_system:"Loop"},
+{id:"324096262902",name:"NOU",owner:"164361709",phase:"Onboarding",ko:"2026-07-20",gl:"2026-10-08",prio:"2",wms_3pl:"Other",edi:"None",accounting_platform:"Finaloop",b2b_selling:"None",returns_system:"Loop"},
+{id:"326742571732",name:"Almina Concept",owner:"164361709",phase:"Onboarding",ko:"2026-08-12",gl:"2026-10-01",prio:"3",wms_3pl:"Deposco",thirdpartylogistics:"Scale 3PL",edi:"None",presales:"true",accounting_platform:"other",b2b_selling:"None",returns_system:"Loop"},
+{id:"338648654538",name:"My Neighbor's Co",owner:"164361709",phase:"Onboarding",ko:"2026-08-31",gl:"2026-11-11",prio:"",wms_3pl:"ShipStation",edi:"None",amazon:"FBA",tiktok:"FBT",comanufacturing:"true",accounting_platform:"QuickBooks",b2b_selling:"Faire"},
+{id:"324615291588",name:"Kismet Pets, Inc.",owner:"164361709",phase:"Onboarding",ko:"2026-07-29",gl:"2026-10-29",prio:"",wms_3pl:"ShipMonk",thirdpartylogistics:"ShipMonk",edi:"Orderful",comanufacturing:"true",accounting_platform:"QuickBooks",b2b_selling:"None"},
+{id:"290749331189",name:"Salt Gypsy",owner:"164361709",phase:"Onboarding",ko:"2026-08-05",gl:"2026-10-15",prio:"",wms_3pl:"Other",thirdpartylogistics:"Other 3PL",edi:"Other EDI",accounting_platform:"QuickBooks",b2b_selling:"Other"},
+{id:"340301502193",name:"Alice Walk",owner:"164361709",phase:"Onboarding",ko:"",gl:"2026-10-15",prio:"",wms_3pl:"No WMS",edi:"None",accounting_platform:"QuickBooks",b2b_selling:"None",returns_system:"Loop"},
+{id:"269371085503",name:"Enfants Riches Deprimes",owner:"164361709",phase:"Onboarding",ko:"2026-06-19",gl:"2026-09-09",prio:"",wms_3pl:"Deposco",thirdpartylogistics:"Scale 3PL",edi:"None",comanufacturing:"true",accounting_platform:"QuickBooks",b2b_selling:"None",returns_system:"None"},
+{id:"28929552207",name:"Local Eclectic",owner:"164361709",phase:"Onboarding",ko:"2026-05-12",gl:"2026-09-24",prio:"",wms_3pl:"Logiwa",thirdpartylogistics:"In-House",edi:"None",accounting_platform:"QuickBooks",b2b_selling:"None",returns_system:"ReDo"},
+{id:"336927169212",name:"12th Tribe",owner:"164361709",phase:"Onboarding",ko:"2026-06-15",gl:"2027-01-06",prio:"",wms_3pl:"Other",thirdpartylogistics:"Ryder",edi:"None",presales:"Will Need Presales",accounting_platform:"QuickBooks",b2b_selling:"None",returns_system:"Loop"},
+{id:"336928626422",name:"Clayton & Crume",owner:"164361709",phase:"Onboarding",ko:"2026-06-12",gl:"2026-10-22",prio:"",wms_3pl:"ShipStation",thirdpartylogistics:"In-House",edi:"None",comanufacturing:"true",accounting_platform:"QuickBooks",b2b_selling:"None",returns_system:"Loop"},
+
+/* ---- Seth Horton ---- */
+{id:"28924070935",name:"Fleur du Mal",owner:"87722392",phase:"Onboarding",ko:"2026-08-03",gl:"2026-10-29",prio:"1",wms_3pl:"CloudX",thirdpartylogistics:"Bergen Logistics",edi:"Other EDI",accounting_platform:"QuickBooks",b2b_selling:"Joor",returns_system:"Loop"},
+{id:"274715445984",name:"Over The Moon",owner:"87722392",phase:"Go Live",ko:"2026-05-18",gl:"2026-08-06",prio:"2",wms_3pl:"CloudX",thirdpartylogistics:"Bergen Logistics",edi:"None",accounting_platform:"QuickBooks",b2b_selling:"None",returns_system:"Loop"},
+{id:"28920684604",name:"Little English",owner:"87722392",phase:"Onboarding",ko:"2026-07-15",gl:"2026-10-14",prio:"3",wms_3pl:"ShipHero",thirdpartylogistics:"ShipHero",returns_system:"Loop",dupe:"320285328083"},
+{id:"320285328083",name:"Little English",owner:"87722392",phase:"Onboarding",ko:"",gl:"2026-10-14",prio:"3",returns_system:"Loop",dupe:"28920684604"},
+{id:"319602620146",name:"VEE COLLECTIVE",owner:"87722392",phase:"Onboarding",ko:"2026-07-31",gl:"2026-10-13",prio:"",wms_3pl:"ShipHero;Other",thirdpartylogistics:"ShipHero",edi:"None",accounting_platform:"QuickBooks",b2b_selling:"None",returns_system:"Other"},
+{id:"277485929187",name:"New York or Nowhere®",owner:"87722392",phase:"Onboarding",ko:"2026-04-09",gl:"2026-10-19",prio:"",wms_3pl:"CloudX",thirdpartylogistics:"Bergen Logistics",edi:"None",accounting_platform:"QuickBooks",b2b_selling:"None",returns_system:"Loop"},
+{id:"240394027759",name:"BRANWYN | Performance Innerwear",owner:"87722392",phase:"Onboarding",ko:"2026-08-04",gl:"2026-10-27",prio:"",wms_3pl:"ShipBob",thirdpartylogistics:"ShipBop",edi:"None",accounting_platform:"QuickBooks",b2b_selling:"None",returns_system:"Loop"},
+{id:"336997768891",name:"Equip Foods",owner:"87722392",phase:"Go Live",ko:"2026-05-15",gl:"2026-09-15",prio:"",wms_3pl:"DCL Fulfillment Services",thirdpartylogistics:"DCL Logistics",edi:"None",accounting_platform:"QuickBooks",b2b_selling:"Other",returns_system:"ReDo"},
+
+/* ---- Hunter Leeming ---- */
+{id:"22878973858",name:"The Perfect Jean",owner:"409269132",phase:"Onboarding",ko:"2026-04-01",gl:"2026-09-16",prio:"1",wms_3pl:"Deposco;Other",thirdpartylogistics:"ITB;Capacity",edi:"None",amazon:"FBM;FBA",comanufacturing:"false",bundles:"SimpleBundles",n1many:"true",accounting_platform:"QuickBooks",b2b_selling:"None",returns_system:"Loop"},
+{id:"22888125357",name:"Troubadour Goods Ltd.",owner:"409269132",phase:"Go Live",ko:"2026-05-18",gl:"2026-08-17",prio:"",wms_3pl:"MintSoft;Blue Yonder;Custom",edi:"SPS Commerce",accounting_platform:"Xero",b2b_selling:"Other",returns_system:"AfterShip Returns"},
+
+/* ---- James Hargett ---- */
+{id:"336998487783",name:"Rowing Blazers",owner:"161684280",phase:"Onboarding",ko:"2026-05-12",gl:"2026-08-28",prio:"",wms_3pl:"Jazz",thirdpartylogistics:"Cart.com",edi:"Crstl",accounting_platform:"QuickBooks",b2b_selling:"NuOrder",returns_system:"Loop"},
+
+/* ---- Matt Wardell ---- */
+{id:"334849421043",name:"BeamRoom",owner:"165027172",phase:"Onboarding",ko:"2026-07-15",gl:"2026-08-18",prio:"",wms_3pl:"ShipStation",b2b_selling:"None"}
+];
+
+/* Manual starting order within an MSM group. Everything not listed falls in
+   behind, still sorted by Discussion Priority ascending.                     */
+const SEED_ORDER = {
+  "160517400":["327608576712","22873124623","25305090993","341916838614"]
+};
+
+
+/* Status as of the Oct 5 review. Applied only where the user has not already
+   set that chip themselves, so local work is never overwritten.            */
+const SEED_STATUS = {"327608576712": {"wms": "progress"},"22873124623": {"wms": "progress","amz": "progress","tik": "progress","many": "progress","qb": "progress"},"25305090993": {"wms": "progress","edi": "progress","coman": "progress","qb": "progress"},"341916838614": {"wms": "complete","many": "complete","qb": "progress"},"332935100113": {"wms": "progress","amz": "progress","tik": "progress","coman": "progress","qb": "progress","loop": "progress"},"341101843147": {"wms": "progress","edi": "progress","amz": "progress","qb": "progress","loop": "progress"},"338907018944": {"wms": "progress","amz": "progress","qb": "progress"},"314955387600": {"wms": "progress","qb": "progress","b2b": "progress"},"307640739529": {"wms": "progress","coman": "progress","qb": "progress"},"340288518873": {"qb": "progress"},"336998487785": {"wms": "complete","pre": "progress","qb": "progress"},"336930068171": {"wms": "complete","edi": "progress","amz": "complete","pre": "progress","coman": "complete","bun": "complete","qb": "complete"},"242871153356": {"wms": "notneeded","qb": "complete","b2b": "notneeded"}};
+
+
+/* Standardized onboarding steps as filled in on the Oct 5 board.
+   Anything omitted stays Not started.                              */
+const SEED_STEPS = {"327608576712": {"s_discovery": "complete","s_data": "complete","s_training": "progress","s_reporting": "progress","s_sclive": "progress","s_wholesale": "progress","s_golive": "progress","s_wms": "progress"},"22873124623": {"s_discovery": "complete","s_data": "progress","s_training": "progress","s_reporting": "progress","s_sclive": "progress","s_wholesale": "progress","s_golive": "progress","s_wms": "progress"},"25305090993": {"s_discovery": "complete","s_data": "progress","s_training": "complete","s_reporting": "progress","s_sclive": "progress","s_wholesale": "progress","s_golive": "progress","s_wms": "progress"},"341916838614": {"s_discovery": "complete","s_data": "complete","s_training": "complete","s_reporting": "complete","s_sclive": "complete","s_wholesale": "complete","s_golive": "complete","s_wms": "complete"},"332935100113": {"s_discovery": "complete","s_data": "progress","s_training": "progress","s_reporting": "progress","s_sclive": "progress"},"341101843147": {"s_discovery": "complete","s_data": "progress","s_training": "progress","s_reporting": "progress","s_sclive": "progress","s_wholesale": "progress"},"338907018944": {"s_discovery": "complete","s_data": "progress","s_training": "progress","s_reporting": "progress","s_wms": "progress"},"314955387600": {"s_discovery": "complete","s_data": "progress","s_training": "progress","s_reporting": "progress","s_wms": "progress"},"307640739529": {"s_discovery": "complete","s_data": "progress","s_training": "progress","s_reporting": "progress","s_wms": "progress"},"340288518873": {"s_discovery": "complete","s_data": "complete","s_training": "complete","s_reporting": "complete","s_wholesale": "complete","s_wms": "progress"},"326912630497": {"s_discovery": "complete","s_data": "complete","s_training": "complete","s_reporting": "complete","s_wholesale": "complete","s_wms": "progress"},"314952001243": {"s_discovery": "progress"},"333533319908": {"s_discovery": "complete","s_data": "progress"},"336998487785": {"s_discovery": "complete","s_data": "complete","s_training": "complete","s_reporting": "complete","s_sclive": "complete","s_wholesale": "complete","s_golive": "complete","s_wms": "complete"},"336930068171": {"s_discovery": "complete","s_data": "complete","s_training": "complete","s_reporting": "complete","s_sclive": "complete","s_wholesale": "progress","s_golive": "complete","s_wms": "complete"},"242871153356": {"s_discovery": "complete","s_data": "complete","s_training": "complete","s_reporting": "complete","s_sclive": "complete","s_wholesale": "complete","s_golive": "complete","s_wms": "complete"}};
+
+/* ============================ state ============================ */
+const KEY  = "goodday_msm_onboarding_tracker_v1";
+const EKEY = "goodday_msm_onboarding_edits_v1";
+let state = {}, edits = {};
+try{ state = JSON.parse(localStorage.getItem(KEY))  || {}; }catch(e){ state = {}; }
+try{ edits = JSON.parse(localStorage.getItem(EKEY)) || {}; }catch(e){ edits = {}; }
+const save = () => { try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} };
+const saveEdits = () => { try{ localStorage.setItem(EKEY, JSON.stringify(edits)); }catch(e){} };
+
+/* manual drag order, per MSM group; seeded once then owned by the user */
+const OKEY = "goodday_msm_onboarding_order_v1";
+let manual = {};
+try{ manual = JSON.parse(localStorage.getItem(OKEY)) || null; }catch(e){ manual = null; }
+if(!manual){ manual = JSON.parse(JSON.stringify(SEED_ORDER)); }
+Object.keys(SEED_ORDER).forEach(o=>{ if(!manual[o]) manual[o] = SEED_ORDER[o].slice(); });
+const saveOrder = () => { try{ localStorage.setItem(OKEY, JSON.stringify(manual)); }catch(e){} };
+/* Seed the reviewed statuses, but never over a chip the user has already set. */
+(function seed(){
+  let touched = false;
+  const all = {};
+  for(const src of [SEED_STATUS, SEED_STEPS]){
+    for(const [id,ws] of Object.entries(src)) all[id] = Object.assign(all[id]||{}, ws);
+  }
+  for(const [id,ws] of Object.entries(all)){
+    for(const [k,s] of Object.entries(ws)){
+      if(state[id] && state[id][k]) continue;      // user's own value wins
+      state[id] = state[id] || {};
+      state[id][k] = {s, n:""};
+      touched = true;
+    }
+  }
+  if(touched) save();
+})();
+
+const cell = (id,k) => (state[id] && state[id][k]) || {s:"notstarted", n:""};
+function setCell(id,k,patch){
+  state[id] = state[id] || {};
+  state[id][k] = Object.assign({s:"notstarted",n:""}, state[id][k], patch);
+  save();
+}
+
+const ui = {
+  group:"owner", layout:"compact", steps:"summary", owner:"", phase:"", q:"",
+  hidden:new Set(), closed:new Set()
+};
+
+/* ============================ helpers ============================ */
+const DAY = 86400000;
+const parse = d => d ? new Date(d+"T00:00:00") : null;
+const fmt = d => { const t=parse(d); return t ? t.toLocaleDateString("en-US",{month:"short",day:"2-digit",year:"numeric"}) : null; };
+
+/* effective value: a local edit wins over the HubSpot value it came in with */
+const val = (a,f) => (edits[a.id] && f in edits[a.id]) ? edits[a.id][f] : (a[f] ?? "");
+const days = a => { const k=parse(val(a,"ko")), g=parse(val(a,"gl")); return (k&&g) ? Math.round((g-k)/DAY) : null; };
+
+/* value shown on a chip, or null when the workstream doesn't apply */
+function techValue(a, t){
+  const raw = (a[t.prop] ?? "").toString().trim();
+  if(!raw) return null;
+  if(t.skip.includes(raw)) return null;
+  if(t.map) return t.map[raw] || raw;
+  const parts = raw.split(";").map(s=>s.trim()).filter(Boolean);
+  if(!parts.length) return null;
+  const pretty = parts.map(p => (t.label && t.label[p]) || p);
+  return pretty.join(" + ");
+}
+const techItems = a => TECH.map(t => ({t, v:techValue(a,t)})).filter(x => x.v);
+/* every account runs all 8 standardized steps — nothing in HubSpot gates them */
+const stdItems  = a => STD.map(t => ({t, v:t.col}));
+const allItems  = a => [...stdItems(a), ...techItems(a)];
+const stdDone   = a => STD.filter(t => cell(a.id,t.k).s==="complete").length;
+const lookup    = k => TECH.find(x=>x.k===k) || STD.find(x=>x.k===k);
+const isStd     = k => k.startsWith("s_");
+
+/* Green→red ramp. Each MSM is scaled against their OWN book, so the colour answers
+   "which of my onboardings is dragging?" rather than comparing across managers.
+   Flat view drops back to one span across everybody.                            */
+function spanOf(list){
+  const v = list.map(days).filter(n=>n!==null);
+  return v.length ? {min:Math.min(...v), max:Math.max(...v)} : null;
+}
+function spanFor(owner){
+  if(ui.group!=="owner" || !owner || owner==="_all") return spanOf(ACCOUNTS);
+  return spanOf(ACCOUNTS.filter(a=>a.owner===owner));
+}
+function place(d, span){                // → 0 fastest … 1 slowest, .5 when no spread
+  if(d===null || !span) return null;
+  if(span.max===span.min) return .5;
+  return (d-span.min)/(span.max-span.min);
+}
+function ramp(p){                       // p: 0 fastest → 1 slowest
+  const stops=[[12,58,44],[51,204,153],[241,210,75],[255,140,25],[142,31,23]];
+  const x=Math.max(0,Math.min(1,p))*(stops.length-1), i=Math.floor(x), f=x-i;
+  const a=stops[i], b=stops[Math.min(i+1,stops.length-1)];
+  return `rgb(${a.map((c,j)=>Math.round(c+(b[j]-c)*f)).join(",")})`;
+}
+const readable = p => p<.32 || p>.72 ? "#fff" : "#2B2929";
+
+/* ============================ filtering ============================ */
+function visible(){
+  const q = ui.q.trim().toLowerCase();
+  return ACCOUNTS.filter(a=>{
+    if(ui.owner && a.owner!==ui.owner) return false;
+    if(ui.phase && a.phase!==ui.phase) return false;
+    if(q && !a.name.toLowerCase().includes(q)) return false;
+    if(ui.hidden.size){
+      const items = allItems(a);
+      if(!items.length) return false;
+      if(!items.some(x => !ui.hidden.has(cell(a.id,x.t.k).s))) return false;
+    }
+    return true;
+  });
+}
+/* Discussion Priority ascending, blanks last; then soonest go-live.
+   A manual drag order for the group overrides it for the rows it names —
+   anything not dragged keeps falling in by priority behind them.          */
+function order(rows, key){
+  const base = rows.slice().sort((x,y)=>{
+    const px = val(x,"prio") ? +val(x,"prio") : 99, py = val(y,"prio") ? +val(y,"prio") : 99;
+    if(px!==py) return px-py;
+    const gx = val(x,"gl") || "9999", gy = val(y,"gl") || "9999";
+    return gx<gy ? -1 : gx>gy ? 1 : x.name.localeCompare(y.name);
+  });
+  const man = manual[key];
+  if(!man || !man.length) return base;
+  const rank = new Map(man.map((id,i)=>[id,i]));
+  return base.sort((x,y)=>{            // stable: unranked keep priority order
+    const rx = rank.has(x.id) ? rank.get(x.id) : Infinity;
+    const ry = rank.has(y.id) ? rank.get(y.id) : Infinity;
+    return rx===ry ? 0 : rx-ry;
+  });
+}
+
+/* ============================ render ============================ */
+const $ = s => document.querySelector(s);
+const head=$("#head"), body=$("#body");
+let activeCols = [];
+
+function render(){
+  const rows = visible();
+  $("#blank").hidden = rows.length>0;
+  $("#tbl").style.display = rows.length ? "" : "none";
+
+  /* a tech column only exists if some visible account actually has that data */
+  activeCols = ui.layout==="columns"
+    ? TECH.filter(t => rows.some(a => techValue(a,t)))
+    : [];
+
+  const stdHead = ui.steps==="summary"
+    ? `<th class="std divider stdtoggle" data-steps="full" title="Expand all 8 onboarding steps">▸ Onboarding</th>`
+    : (ui.layout==="columns"
+        ? `<th class="std divider stdtoggle" data-steps="summary" title="Roll the steps back up">▾ ${STD[0].col}</th>`
+          + STD.slice(1).map(t=>`<th class="std">${t.col}</th>`).join("")
+        : `<th class="std divider stdtoggle" data-steps="summary" title="Roll the steps back up">▾ Onboarding steps</th>`);
+
+  head.innerHTML =
+    `<th class="sticky-l">Account</th><th>Phase</th><th>Kick Off</th><th>Inventory Go Live</th>`+
+    `<th>Days KO→Live</th><th>Priority</th>`+ stdHead +
+    (ui.layout==="columns"
+      ? activeCols.map((t,i)=>`<th class="tech${i===0?" divider":""}">${t.col}</th>`).join("")
+      : `<th class="tech divider">Go-live tech</th>`);
+
+  const groups = ui.group==="owner"
+    ? Object.entries(rows.reduce((m,a)=>((m[a.owner]=m[a.owner]||[]).push(a),m),{}))
+        .sort((a,b)=>OWNERS[a[0]].localeCompare(OWNERS[b[0]]))
+    : [["_all", rows]];
+
+  let html="";
+  for(const [own, list] of groups){
+    if(ui.group==="owner"){
+      let done=0, tot=0;
+      list.forEach(a => allItems(a).forEach(x=>{ tot++; if(cell(a.id,x.t.k).s==="complete") done++; }));
+      const pct = tot ? Math.round(done/tot*100) : 0;
+      const closed = ui.closed.has(own);
+      html += `<tr class="grp${closed?" closed":""}"><td colspan="99">
+        <button class="grpbar" data-grp="${own}" aria-expanded="${!closed}">
+          <span class="chev">▼</span>
+          <span class="grpname">${OWNERS[own]||"Unassigned"}</span>
+          <span class="grpmeta">${list.length} account${list.length===1?"":"s"}</span>
+          <span class="pbar"><span style="width:${pct}%"></span></span>
+          <span class="grpmeta">${pct}% · ${done}/${tot} workstreams complete</span>
+        </button></td></tr>`;
+      if(closed) continue;
+    }
+
+    const span = spanFor(own);
+    for(const a of order(list, own)){
+      const d = days(a);
+      const p = place(d, span);
+      const varCell = d===null
+        ? `<span class="nodate mono">— no go-live date</span>`
+        : `<span class="var">
+             <span class="varnum" style="background:${ramp(p)};color:${readable(p)}">${d}d</span>
+             <span class="varbar"><span style="width:${Math.max(6,p*100)}%;background:${ramp(p)}"></span></span>
+           </span>`;
+
+      const items = techItems(a);
+      let techHtml;
+      if(ui.layout==="columns"){
+        techHtml = activeCols.map((t,i)=>{
+          const v = techValue(a,t);
+          return `<td class="techcell${i===0?" divider":""}">${v?chip(a,t,v):`<span class="empty">·</span>`}</td>`;
+        }).join("");
+      }else{
+        techHtml = `<td class="techcell divider"><span class="chips">`+
+          (items.length ? items.map(x=>chip(a,x.t,x.v)).join("") : `<span class="empty">no tech logged</span>`)+
+          `</span></td>`;
+      }
+
+      html += `<tr draggable="true" data-id="${a.id}" data-own="${own}">
+        <td class="sticky-l"><span class="acct">
+          <span class="grip" title="Drag to reorder">⣿</span>
+          <span class="dot" style="background:${a.phase==="Go Live"?"var(--green)":"var(--sage)"}"></span>
+          <a href="${a.os || `https://app.hubspot.com/contacts/${PORTAL}/record/0-2/${a.id}`}" target="_blank" rel="noopener"
+             title="${a.os?`OS Tracker · ${esc(a.name)}`:`No OS Tracker link — opens HubSpot · ${esc(a.name)}`}">${esc(a.name)}</a>
+          ${a.doc?`<a class="minilink doc" href="${a.doc}" target="_blank" rel="noopener" title="Weekly update doc">doc</a>`:""}
+          <a class="minilink" href="https://app.hubspot.com/contacts/${PORTAL}/record/0-2/${a.id}" target="_blank" rel="noopener" title="HubSpot record">hs</a>
+          ${a.dupe?`<span class="dupe" title="Duplicate HubSpot company record — also exists as id ${a.dupe}">2x</span>`:""}
+        </span></td>
+        <td><span class="phase ${a.phase==="Go Live"?"gl":"on"}">${a.phase}</span></td>
+        ${dateCell(a,"ko")}
+        ${dateCell(a,"gl")}
+        <td>${varCell}</td>
+        ${prioCell(a)}
+        ${stdCells(a)}
+        ${techHtml}
+      </tr>`;
+    }
+  }
+  body.innerHTML = html;
+  legend(rows); totals(rows); refreshSync();
+}
+
+/* ---- editable cells ---- */
+const dirty = (a,f) => !!(edits[a.id] && f in edits[a.id]);
+function dateCell(a,f){
+  const v = val(a,f), d = dirty(a,f);
+  return `<td class="date edit${d?" pend":""}" data-eid="${a.id}" data-ef="${f}"
+    title="Click to edit · writes back to HubSpot on push">${
+      fmt(v) || `<span class="nodate">—</span>`}${d?`<span class="pendmark">•</span>`:""}</td>`;
+}
+function prioCell(a){
+  const v = val(a,"prio"), d = dirty(a,"prio");
+  return `<td class="edit${d?" pend":""}" data-eid="${a.id}" data-ef="prio"
+    title="Click to edit · writes back to HubSpot on push">
+    <span class="prio ${v==="1"?"p1":""}${v?"":" none"}">${v||"–"}</span>${d?`<span class="pendmark">•</span>`:""}</td>`;
+}
+
+function startEdit(td){
+  if(td.querySelector("input,select")) return;
+  const a = ACCOUNTS.find(x=>x.id===td.dataset.eid), f = td.dataset.ef;
+  const cur = val(a,f);
+  td.innerHTML = f==="prio"
+    ? `<select><option value="">–</option>${[1,2,3,4,5].map(n=>
+        `<option value="${n}"${cur==String(n)?" selected":""}>${n}</option>`).join("")}</select>`
+    : `<input type="date" value="${cur||""}">`;
+  const el = td.firstElementChild;
+  el.focus(); if(el.showPicker){ try{ el.showPicker(); }catch(e){} }
+
+  let closed = false;
+  const commit = () => {
+    if(closed) return; closed = true;
+    const next = el.value || "";
+    if(next !== (a[f] ?? "")){ edits[a.id] = edits[a.id]||{}; edits[a.id][f] = next; }
+    else if(edits[a.id]){ delete edits[a.id][f]; if(!Object.keys(edits[a.id]).length) delete edits[a.id]; }
+    saveEdits(); render();
+  };
+  el.addEventListener("blur", commit);
+  el.addEventListener("change", commit);
+  el.addEventListener("keydown", ev=>{
+    if(ev.key==="Enter") commit();
+    if(ev.key==="Escape"){ closed=true; render(); }
+  });
+}
+
+/* pending edits → HubSpot payload */
+const FIELD = {ko:"kick_off_date", gl:"inventory_go_live_date", prio:"discussion_priority"};
+function pending(){
+  return Object.entries(edits).map(([id,ch])=>{
+    const props = {};
+    Object.entries(ch).forEach(([f,v])=> props[FIELD[f]] = v);
+    const a = ACCOUNTS.find(x=>x.id===id);
+    return {id, name:a?a.name:id, properties:props};
+  }).filter(e=>Object.keys(e.properties).length);
+}
+function refreshSync(){
+  const n = pending().reduce((t,e)=>t+Object.keys(e.properties).length,0);
+  $("#sync").hidden = n===0; $("#pend").textContent = n;
+}
+let toastT;
+function toast(msg, bad){
+  const t = $("#toast"); t.innerHTML = msg;
+  t.className = "toast show" + (bad?" bad":"");
+  clearTimeout(toastT); toastT = setTimeout(()=>t.className="toast", bad?11000:5000);
+}
+
+/* Rolled up: one strip of 8 dots plus an n/8 count, with a tick once every
+   step is complete. Expanded: full chips, as columns or a wrapping cloud.  */
+function stdCells(a){
+  if(ui.steps==="summary"){
+    const done = stdDone(a), all = done===STD.length;
+    return `<td class="stdcell divider"><span class="steps">
+      <span class="dots">${STD.map(t=>chip(a,t,t.col,"sdot")).join("")}</span>
+      <span class="frac${all?" all":""}">${all?"✓ ":""}${done}/${STD.length}</span>
+    </span></td>`;
+  }
+  if(ui.layout==="columns"){
+    return STD.map((t,i)=>`<td class="techcell${i===0?" divider":""}">${chip(a,t,t.col)}</td>`).join("");
+  }
+  return `<td class="techcell divider"><span class="chips">${
+    STD.map(t=>chip(a,t,t.col)).join("")}</span></td>`;
+}
+
+function chip(a,t,v,extra){
+  const c = cell(a.id,t.k);
+  const note = c.n ? `<span class="flag" style="background:var(--grass)"></span>` : "";
+  const lbl = STATUSES.find(s=>s.k===c.s).label;
+  const tip = extra==="sdot" ? `${esc(t.col)} — ${lbl}${c.n?" · has note":""}`
+                             : `${esc(t.col)}: ${esc(v)} — ${lbl}`;
+  return `<button class="chip ${extra||""} s-${c.s}" data-id="${a.id}" data-k="${t.k}" title="${tip}">${esc(v)}${note}</button>`;
+}
+const esc = s => String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
+
+function counts(rows){
+  const c = Object.fromEntries(STATUSES.map(s=>[s.k,0]));
+  rows.forEach(a => allItems(a).forEach(x => c[cell(a.id,x.t.k).s]++));
+  return c;
+}
+function legend(rows){
+  const c = counts(rows);
+  $("#legend").innerHTML = STATUSES.map(s=>
+    `<button class="lg" data-s="${s.k}" aria-pressed="${!ui.hidden.has(s.k)}">
+       <i style="background:${s.c}"></i>${s.label} <b>${c[s.k]}</b></button>`).join("");
+}
+function totals(rows){
+  const c = counts(rows), tot = Object.values(c).reduce((a,b)=>a+b,0);
+  const pct = tot ? Math.round(c.complete/tot*100) : 0;
+  const stepsDone = rows.reduce((n,a)=>n+stdDone(a),0), stepsTot = rows.length*STD.length;
+  const ready = rows.filter(a=>stdDone(a)===STD.length).length;
+  const techTot = rows.reduce((n,a)=>n+techItems(a).length,0);
+  $("#tot").innerHTML = `<b>${rows.length}</b> accounts · steps <b>${stepsDone}/${stepsTot}</b>`+
+    ` · <b>${ready}</b> with all 8 done · tech <b>${techTot}</b> · <b>${pct}%</b> overall complete`;
+}
+
+/* ============================ popover ============================ */
+const pop = $("#pop"); let popCtx = null;
+function openPop(btn){
+  const id = btn.dataset.id, k = btn.dataset.k;
+  const a = ACCOUNTS.find(x=>x.id===id), t = lookup(k), c = cell(id,k);
+  popCtx = {id,k,btn};
+
+  let det, link = "";
+  if(isStd(k)){
+    det = `<b>Onboarding step</b> · ${esc(t.col)}<br><b>Progress</b> · ${stdDone(a)} of ${STD.length} steps complete`;
+  }else{
+  det = `<b>${esc(t.col)}</b> · ${esc(techValue(a,t))}`;
+  if(k==="wms"){
+    det += `<br><b>3PL</b> · ${a.thirdpartylogistics ? esc(a.thirdpartylogistics.split(";").join(" + ")) : "—"}`;
+    if(a.wmsUrl) link = `<a class="golink" href="${a.wmsUrl}" target="_blank" rel="noopener">
+      Open WMS onboarding →<span>Shopify admin · GoodDay app</span></a>`;
+  }
+  }
+
+  pop.innerHTML = `<h4>${esc(a.name)}</h4><p class="det">${det}</p>${link}`+
+    STATUSES.map(s=>`<button class="opt" data-s="${s.k}" aria-pressed="${c.s===s.k}">
+      <i style="background:${s.k==="notstarted"?"#fff":s.c};border-color:${s.c}"></i>${s.label}
+      <span class="tick">✓</span></button>`).join("")+
+    `<hr><label for="note">Note — what's needed</label><textarea id="note" placeholder="Blockers, owner, next step…">${esc(c.n)}</textarea>`;
+
+  pop.classList.add("open");
+  const r = btn.getBoundingClientRect(), w = 274, h = pop.offsetHeight;
+  pop.style.left = Math.min(Math.max(8, r.left), innerWidth-w-8) + "px";
+  pop.style.top  = (r.bottom+8+h > innerHeight ? Math.max(8, r.top-h-8) : r.bottom+8) + "px";
+}
+function closePop(){
+  if(popCtx){
+    const ta = pop.querySelector("#note");
+    if(ta) setCell(popCtx.id, popCtx.k, {n:ta.value});
+  }
+  pop.classList.remove("open"); popCtx=null; render();
+}
+pop.addEventListener("click", e=>{
+  const o = e.target.closest(".opt"); if(!o || !popCtx) return;
+  setCell(popCtx.id, popCtx.k, {s:o.dataset.s});
+  pop.querySelectorAll(".opt").forEach(b=>b.setAttribute("aria-pressed", b===o));
+  const dot = popCtx.btn.classList.contains("sdot") ? " sdot" : "";
+  popCtx.btn.className = "chip"+dot+" s-"+o.dataset.s;
+});
+
+/* ============================ events ============================ */
+document.addEventListener("click", e=>{
+  const td = e.target.closest("td.edit");
+  if(td){ if(popCtx) closePop(); startEdit(td); return; }
+  if(e.target.closest("input,select") && e.target.closest("td")) return;
+
+  const chipEl = e.target.closest(".chip");
+  if(chipEl){ if(popCtx && popCtx.btn===chipEl){ closePop(); } else { if(popCtx) closePop(); openPop(chipEl); } return; }
+  if(pop.contains(e.target)) return;
+  if(popCtx) closePop();
+
+  const g = e.target.closest("[data-grp]");
+  if(g){ const k=g.dataset.grp; ui.closed.has(k) ? ui.closed.delete(k) : ui.closed.add(k); render(); return; }
+
+  const lg = e.target.closest(".lg");
+  if(lg){ const s=lg.dataset.s; ui.hidden.has(s) ? ui.hidden.delete(s) : ui.hidden.add(s); render(); return; }
+
+  const th = e.target.closest("th.stdtoggle");
+  if(th){
+    ui.steps = th.dataset.steps;
+    document.querySelectorAll("[data-steps]").forEach(b=>{
+      if(b.tagName==="BUTTON") b.setAttribute("aria-pressed", b.dataset.steps===ui.steps);
+    });
+    render(); return;
+  }
+
+  const sg = e.target.closest("button[data-group],button[data-layout],button[data-steps]");
+  if(sg){
+    const key = sg.dataset.group ? "group" : sg.dataset.layout ? "layout" : "steps";
+    ui[key] = sg.dataset[key];
+    sg.parentElement.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed", b===sg));
+    render();
+  }
+});
+/* ---- drag to reorder, constrained to one MSM group ---- */
+let dragRow = null;
+body.addEventListener("dragstart", e=>{
+  const tr = e.target.closest("tr[data-id]"); if(!tr) return;
+  dragRow = tr; tr.classList.add("dragging");
+  e.dataTransfer.effectAllowed = "move";
+  try{ e.dataTransfer.setData("text/plain", tr.dataset.id); }catch(err){}
+  if(popCtx) closePop();
+});
+body.addEventListener("dragover", e=>{
+  if(!dragRow) return;
+  const tr = e.target.closest("tr[data-id]");
+  if(!tr || tr===dragRow) return;
+  if(tr.dataset.own !== dragRow.dataset.own) return;   // never across managers
+  e.preventDefault(); e.dataTransfer.dropEffect = "move";
+  const r = tr.getBoundingClientRect();
+  const after = e.clientY > r.top + r.height/2;
+  tr.parentNode.insertBefore(dragRow, after ? tr.nextSibling : tr);
+});
+body.addEventListener("dragend", ()=>{
+  if(!dragRow) return;
+  const own = dragRow.dataset.own;
+  dragRow.classList.remove("dragging"); dragRow = null;
+  manual[own] = [...body.querySelectorAll(`tr[data-own="${CSS.escape(own)}"]`)].map(tr=>tr.dataset.id);
+  saveOrder(); render();
+});
+body.addEventListener("drop", e=>{ if(dragRow) e.preventDefault(); });
+
+document.addEventListener("keydown", e=>{ if(e.key==="Escape" && popCtx) closePop(); });
+addEventListener("resize", ()=>{ if(popCtx) closePop(); });
+
+$("#q").addEventListener("input", e=>{ ui.q=e.target.value; render(); });
+$("#owner").addEventListener("change", e=>{ ui.owner=e.target.value; render(); });
+$("#phase").addEventListener("change", e=>{ ui.phase=e.target.value; render(); });
+$("#expand").addEventListener("click", e=>{
+  const anyClosed = ui.closed.size>0;
+  ui.closed = anyClosed ? new Set() : new Set(Object.keys(OWNERS));
+  e.target.textContent = anyClosed ? "Collapse all" : "Expand all";
+  render();
+});
+$("#export").addEventListener("click", ()=>{
+  const out = ACCOUNTS.map(a=>({
+    account:a.name, hubspotId:a.id, msm:OWNERS[a.owner], phase:a.phase,
+    kickOff:val(a,"ko")||null, inventoryGoLive:val(a,"gl")||null, daysKickOffToGoLive:days(a),
+    discussionPriority:val(a,"prio")||null,
+    pendingHubSpotEdits: edits[a.id] ? Object.fromEntries(
+      Object.entries(edits[a.id]).map(([f,v])=>[FIELD[f], v||null])) : null,
+    onboardingStepsComplete:`${stdDone(a)}/${STD.length}`,
+    onboardingSteps:stdItems(a).map(x=>({
+      step:x.t.col,
+      status:STATUSES.find(s=>s.k===cell(a.id,x.t.k).s).label,
+      note:cell(a.id,x.t.k).n||null
+    })),
+    workstreams:techItems(a).map(x=>({
+      workstream:x.t.col, value:x.v,
+      status:STATUSES.find(s=>s.k===cell(a.id,x.t.k).s).label,
+      note:cell(a.id,x.t.k).n||null
+    }))
+  }));
+  const blob = new Blob([JSON.stringify({exported:new Date().toISOString(), accounts:out},null,2)],{type:"application/json"});
+  const url = URL.createObjectURL(blob), link = document.createElement("a");
+  link.href=url; link.download="onboarding-tracker.json"; link.click(); URL.revokeObjectURL(url);
+});
+$("#sync").addEventListener("click", async e=>{
+  const list = pending();
+  if(!list.length) return;
+  const lines = list.map(x=>`${x.name}: ${Object.entries(x.properties)
+    .map(([k,v])=>`${k} → ${v||"(cleared)"}`).join(", ")}`).join("\n");
+  if(!confirm(`Write these changes to HubSpot?\n\n${lines}`)) return;
+
+  e.target.disabled = true; e.target.textContent = "Pushing…";
+  try{
+    const res = await fetch("/api/hubspot-update", {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({updates:list})
+    });
+    const txt = await res.text();
+    if(!res.ok) throw new Error(`${res.status} ${txt.slice(0,180)}`);
+    /* HubSpot accepted them, so they stop being local overrides */
+    list.forEach(x=>{
+      const a = ACCOUNTS.find(y=>y.id===x.id);
+      Object.entries(edits[x.id]||{}).forEach(([f,v])=>{ if(a) a[f]=v; });
+      delete edits[x.id];
+    });
+    saveEdits(); render();
+    toast(`Updated <b>${list.length}</b> ${list.length===1?"account":"accounts"} in HubSpot.`);
+  }catch(err){
+    const off = /404|Failed to fetch|NetworkError|Unexpected token/i.test(err.message);
+    toast(off
+      ? `No write endpoint yet — your edits are saved locally and still queued. Deploy <code>/api/hubspot-update</code> with a <code>HUBSPOT_TOKEN</code> env var to enable the push.`
+      : `HubSpot rejected the update: ${esc(err.message)}`, true);
+  }finally{
+    e.target.disabled = false; refreshSync();
+    e.target.innerHTML = `Push <b id="pend">${$("#pend")?$("#pend").textContent:0}</b> edits to HubSpot`;
+    refreshSync();
+  }
+});
+
+$("#reset").addEventListener("click", ()=>{
+  const q = pending().length;
+  if(!confirm(`Clear every status, note and custom row order on this device${q?`, and discard ${q} unpushed HubSpot edit${q===1?"":"s"}`:""}? The HubSpot data itself is untouched.`)) return;
+  state={}; edits={}; manual=JSON.parse(JSON.stringify(SEED_ORDER));
+  save(); saveEdits(); saveOrder(); render();
+});
+
+/* MSM dropdown, only the owners who actually hold accounts */
+const held = [...new Set(ACCOUNTS.map(a=>a.owner))].sort((a,b)=>OWNERS[a].localeCompare(OWNERS[b]));
+$("#owner").insertAdjacentHTML("beforeend", held.map(o=>{
+  const n = ACCOUNTS.filter(a=>a.owner===o).length;
+  return `<option value="${o}">${OWNERS[o]} (${n})</option>`;
+}).join(""));
+
+render();
+</script>
+</body>
+</html>
